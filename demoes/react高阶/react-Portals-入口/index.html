@@ -21,6 +21,13 @@
       /* 表述： 将子节点渲染到父组件以外的 DOM 节点。 */
       /* 例子： 弹框组件 Modal */
 
+      /* Modal 上下文依赖注入 */
+      const ModalContext = React.createContext({
+        isShow: false,
+        content: <div>model-content</div>,
+        toggle: (_e, _isShow, _content) => {},
+      });
+
       /* 样式配置 */
       const backDrop = {
         zIndex: 999,
@@ -55,32 +62,43 @@
       class Modal extends React.Component {
         constructor(porps) {
           super(porps);
+          this.state = {
+            isShow: false,
+          }
+
           this.insertEl = document.getElementById('modal-root');
         }
 
         render() {
-          const { header, footer, styleConf, isShow, children } = this.props;
+          const { header, footer, styleConf, children } = this.props;
           const style = Object.assign({}, styleConf);
-          style.backDrop = Object.assign({}, style.backDrop, {display: isShow? 'block' : 'none'});
-          style.container = Object.assign({}, style.container, {display: isShow? 'block' : 'none'});
           
           return ReactDOM.createPortal(
-            <React.Fragment>
-              <div className="modal-container" style={style.backDrop}
-              onClick={(_e) => this.props.toggleShow(_e, false)}>
-              </div>
+            <ModalContext.Consumer>
+              {({ isShow, content, toggle }) => {
+                style.backDrop = Object.assign({}, style.backDrop, {display: isShow? 'block' : 'none'});
+                style.container = Object.assign({}, style.container, {display: isShow? 'block' : 'none'});
+                
+                return (
+                  <React.Fragment>
+                    <div className="modal-container" style={style.backDrop}
+                    onClick={(_e) => toggle(_e, false)}>
+                    </div>
 
-              <article className="modal" style={style.container}>
-                <header style={style.header}>
-                  {header}
-                  <i onClick={(_e) => this.props.toggleShow(_e, false)}>X</i>
-                </header>
-                <section style={style.body}>
-                  <div>{children}</div>
-                </section>
-                <footer style={style.footer}>{footer}</footer>
-              </article>
-            </React.Fragment>
+                    <article className="modal" style={style.container}>
+                      <header style={style.header}>
+                        {header}
+                        <i onClick={(_e) => toggle(_e, false)}>X</i>
+                      </header>
+                      <section style={style.body}>
+                        {content || <div>{children}</div>}  
+                      </section>
+                      <footer style={style.footer}>{footer}</footer>
+                    </article>
+                  </React.Fragment>
+                );
+              }}
+            </ModalContext.Consumer>
           , this.insertEl);
         }
       }
@@ -93,40 +111,62 @@
         toggleShow(_isShow) {},  // 切换可视化
       }
 
+      class Page extends React.Component {
+        constructor(props) {
+          super(props);
+        }
+
+        render() {
+          return (
+            <ModalContext.Consumer>
+              {({ isShow, content, toggle }) => {
+                return (
+                  <section>
+                    <h1>Hello World!</h1>  
+                    <button onClick={toggle}>
+                      { isShow? 'hideModal' : 'showModal' }
+                    </button>
+                  </section>
+                );
+              }}
+            </ModalContext.Consumer>
+          );
+        }
+      }
+
       /* App */
       class App extends React.Component {
         constructor(props) {
           super(props);
+
           this.state = {
-            isModalShow: false,
+            modalProvider: {
+              isShow: false,
+              content: <div>model-content</div>,
+              /* 切换模态框可实现 */
+              toggle: (_e, _isShow, _content) => {
+                this.setState(preState => {
+                  const {modalProvider} = preState;
+                  modalProvider.isShow = _isShow === undefined? !modalProvider.isShow : !!_isShow;
+                  if (_content) modalProvider.content = _content;
+                  return {modalProvider};
+                });
+              }
+            }
           }
-
-          this.togleModalShow = this.togleModalShow.bind(this);
         }
-
-        /* 切换模态框可实现 */
-        togleModalShow(_event, _isShow) {
-          if (_isShow === undefined) this.setState(preState => {
-            return {isModalShow: !preState.isModalShow}
-          });
-          else this.setState({isModalShow: !!_isShow});
-        }
+        
 
         render() {
           const { isModalShow } = this.state;
           
           return (
-            <article>
-              <h1>Hello World!</h1>  
-              <button onClick={this.togleModalShow}>
-                { this.state.isModalShow? 'hideModal' : 'showModal' }
-              </button>
-              <Modal header="modal-header" footer="modal-footer" 
-              isShow={isModalShow}
-              toggleShow={this.togleModalShow}>
-                modal-body
-              </Modal>
-            </article>
+            <ModalContext.Provider value={this.state.modalProvider}>
+              <article>
+                <Page />
+                <Modal header="modal-header" footer="modal-footer"></Modal>
+              </article>
+            </ModalContext.Provider>
           );
         }
       }
