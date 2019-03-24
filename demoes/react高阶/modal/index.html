@@ -104,16 +104,61 @@
       }
       /* Modal props 默认值 */
       Modal.defaultProps = {
-        isShow: false,  // 控制显示性
         header: 'Header',  // 头部 template
         footer: 'Footer',  // 下脚 template
         styleConf: ModalStyleConf,  // 样式配置
-        toggleShow(_isShow) {},  // 切换可视化
       }
 
-      class Page extends React.Component {
+      /* Modal 组件配上 Context */
+      class ModalWidthProvider extends React.Component {
+
         constructor(props) {
           super(props);
+          this.state = {
+            isShow: false,
+            content: null,
+            /* 切换模态框可实现 */
+            toggle: (_e, _isShow, _content, _callback) => {
+              this.setState(preState => {
+                const modalProvider = {...preState};
+                modalProvider.isShow = _isShow === undefined? !modalProvider.isShow : !!_isShow;
+                if (_content) modalProvider.content = _content;
+                return modalProvider;
+              });
+
+              // 可有可无
+              if (_callback) _callback(this.state);
+              return this.state;
+            }
+          }
+        }
+
+        render() {
+          const { children, header, content, footer, styleConf, } = this.props;
+          
+          return (
+            <ModalContext.Provider value={this.state}>
+              {children}
+              <Modal {...{header, footer, styleConf}}>
+                {content}
+              </Modal>
+            </ModalContext.Provider>
+          );
+        }
+        
+      }
+      
+      /* 主页面 */
+      class Page extends React.Component {
+        
+        constructor(props) {
+          super(props);
+          this.toggleModalShow = this.toggleModalShow.bind(this);
+        }
+
+        toggleModalShow(toggle) {
+          const modalState = toggle();
+          this.setState({});
         }
 
         render() {
@@ -138,35 +183,19 @@
       class App extends React.Component {
         constructor(props) {
           super(props);
-
-          this.state = {
-            modalProvider: {
-              isShow: false,
-              content: <div>model-content</div>,
-              /* 切换模态框可实现 */
-              toggle: (_e, _isShow, _content) => {
-                this.setState(preState => {
-                  const {modalProvider} = preState;
-                  modalProvider.isShow = _isShow === undefined? !modalProvider.isShow : !!_isShow;
-                  if (_content) modalProvider.content = _content;
-                  return {modalProvider};
-                });
-              }
-            }
-          }
         }
-        
 
-        render() {
-          const { isModalShow } = this.state;
-          
+        render() {          
           return (
-            <ModalContext.Provider value={this.state.modalProvider}>
+            <ModalWidthProvider 
+            header={<b>HEADER</b>} 
+            content={<i>Some Cotent......</i>}
+            footer={<b>FOOTER</b>}
+            >
               <article>
                 <Page />
-                <Modal header="modal-header" footer="modal-footer"></Modal>
               </article>
-            </ModalContext.Provider>
+            </ModalWidthProvider>
           );
         }
       }
