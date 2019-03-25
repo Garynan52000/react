@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <script src="../build/react.development.js"></script>
+    <script src="../build/react-dom.development.js"></script>
+    <script src="../build/babel.min.js"></script>
+    <script src="../build/jquery.min.js"></script>
+  </head>
+  <body>
+    <!-- 主页入口 -->
+    <div id="root"></div>
+    <!-- 弹框组建入口 -->
+    <div id="modal-root"></div>
+
+    <script type="text/babel">
+    
+      function logErrorToMyService(error, info) {
+        console.log('logErrorToMyService error: ', error);
+        console.log('logErrorToMyService info: ', info);
+      }
+
+      function List(props) {
+        throw new Error('get not get List!');
+        return (
+          <ul>
+            <li>11111111111</li>
+            <li>22222222222</li>
+            <li>33333333333</li>
+            <li>44444444444</li>
+          </ul>
+        );
+      }
+
+      function Header(props) {
+        return (
+          <header>
+            <h2>Header</h2>
+            <nav>
+              <a>Home</a>
+              <a>Part1</a>
+              <a>Part2</a>
+              <a>Part3</a>
+            </nav>
+          </header>
+        );
+      }
+
+      function Article(props) {
+        return (
+          <article>
+            <h3>Article</h3>
+            <p>show some news: </p>
+            <ErrorBoundary>
+              <List />
+            </ErrorBoundary>
+          </article>
+        );
+      }
+
+      function Footer(props) {
+        const arr = [];
+        return (
+          <footer>{arr[100].nokey}</footer>
+        );
+      }
+
+      class ErrorBoundary extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = { error: null };
+        }
+
+        static getDerivedStateFromError(error) {
+          // Update state so the next render will show the fallback UI.
+          return { error };
+        }
+
+        componentDidCatch(error, info) {
+          // You can also log the error to an error reporting service
+          logErrorToMyService(error, info);
+        }
+
+        render() {
+          const { error } = this.state;
+          if (!!error) {
+            return <pre>{JSON.stringify(error)}</pre>
+          }
+          return this.props.children; 
+        }
+      }
+    
+      /* App */
+      class App extends React.Component {
+        constructor(props) {
+          super(props);
+        }
+
+        render() {          
+          return (
+            <ErrorBoundary>
+              <Header />
+              <Article />
+              <Footer />
+            </ErrorBoundary>
+          );
+        }
+      }
+
+      ReactDOM.render(
+        <App />,
+        document.getElementById('root')
+      );
+    </script>
+  </body>
+</html>
