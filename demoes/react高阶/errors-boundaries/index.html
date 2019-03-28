@@ -21,7 +21,7 @@
       }
 
       function List(props) {
-        throw new Error('get not get List!');
+        throw new Error('can not get List!');
         return (
           <ul>
             <li>11111111111</li>
@@ -61,24 +61,37 @@
       function Footer(props) {
         const arr = [];
         return (
-          <footer>{arr[100].nokey}</footer>
+          <footer>
+            <h2>Footer</h2>
+            <ErrorBoundary>
+              <div>
+                {arr[100].nokey}
+              </div>
+            </ErrorBoundary>
+          </footer>
         );
       }
 
       class ErrorBoundary extends React.Component {
         constructor(props) {
           super(props);
-          this.state = { error: null };
+          this.state = { 
+            isError: false,
+            error: null,
+            errorInfo: null,
+          };
         }
 
         static getDerivedStateFromError(error) {
           // Update state so the next render will show the fallback UI.
-          return { error };
+          const isError = true;
+          return { isError, error };
         }
 
         componentDidCatch(error, info) {
           // You can also log the error to an error reporting service
-          logErrorToMyService(error, info);
+          console.log('error', error);
+          console.log('info', info);
         }
 
         render() {
@@ -98,11 +111,19 @@
 
         render() {          
           return (
-            <ErrorBoundary>
+            <React.Fragment>
+
               <Header />
-              <Article />
-              <Footer />
-            </ErrorBoundary>
+
+              <ErrorBoundary>
+                <Article />
+              </ErrorBoundary>
+
+              <ErrorBoundary>
+                <Footer />
+              </ErrorBoundary>
+
+            </React.Fragment>
           );
         }
       }
