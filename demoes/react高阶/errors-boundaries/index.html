@@ -6,6 +6,16 @@
     <script src="../build/react-dom.development.js"></script>
     <script src="../build/babel.min.js"></script>
     <script src="../build/jquery.min.js"></script>
+    <style>
+      pre {
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+      nav > a {
+        padding-right: 15px;
+        margin-right: 15px;
+      }
+    </style>
   </head>
   <body>
     <!-- 主页入口 -->
@@ -15,23 +25,6 @@
 
     <script type="text/babel">
     
-      function logErrorToMyService(error, info) {
-        console.log('logErrorToMyService error: ', error);
-        console.log('logErrorToMyService info: ', info);
-      }
-
-      function List(props) {
-        throw new Error('get not get List!');
-        return (
-          <ul>
-            <li>11111111111</li>
-            <li>22222222222</li>
-            <li>33333333333</li>
-            <li>44444444444</li>
-          </ul>
-        );
-      }
-
       function Header(props) {
         return (
           <header>
@@ -42,6 +35,7 @@
               <a>Part2</a>
               <a>Part3</a>
             </nav>
+            <hr/>
           </header>
         );
       }
@@ -54,37 +48,70 @@
             <ErrorBoundary>
               <List />
             </ErrorBoundary>
+            <hr/>
           </article>
+        );
+      }
+      function List(props) {
+        throw new Error('get not get List!');
+        return (
+          <ul>
+            <li>11111111111</li>
+            <li>22222222222</li>
+            <li>33333333333</li>
+            <li>44444444444</li>
+          </ul>
         );
       }
 
       function Footer(props) {
-        const arr = [];
         return (
-          <footer>{arr[100].nokey}</footer>
+          <footer>
+            <h3>Footer</h3>
+            <ErrorBoundary>
+              <FooterError />
+            </ErrorBoundary>
+            <hr/>
+          </footer>
         );
+      }
+      function FooterError(props) {
+        const arr = [];
+        const message = arr[100].message 
+        return message;
       }
 
       class ErrorBoundary extends React.Component {
         constructor(props) {
           super(props);
-          this.state = { error: null };
+          this.state = { 
+            isError: false,
+            error: null,
+            errorInfo: null,
+         };
         }
 
         static getDerivedStateFromError(error) {
-          // Update state so the next render will show the fallback UI.
-          return { error };
+          const isError = true;
+          return { isError, error };
         }
 
         componentDidCatch(error, info) {
           // You can also log the error to an error reporting service
-          logErrorToMyService(error, info);
+          this.setState({
+            errorInfo: info
+          });
         }
 
         render() {
-          const { error } = this.state;
-          if (!!error) {
-            return <pre>{JSON.stringify(error)}</pre>
+          const { isError, error, errorInfo } = this.state;
+          const message = error && error.message;
+          const details = errorInfo && JSON.stringify(errorInfo);
+          if (isError) {
+            return <code>
+              <pre>message: {message}</pre>
+              <pre>details: {details}</pre>
+            </code>
           }
           return this.props.children; 
         }
@@ -98,11 +125,17 @@
 
         render() {          
           return (
-            <ErrorBoundary>
-              <Header />
-              <Article />
-              <Footer />
-            </ErrorBoundary>
+            <React.Fragment>
+              <ErrorBoundary>
+                <Header />
+              </ErrorBoundary>
+              <ErrorBoundary>
+                <Article />
+              </ErrorBoundary>
+              <ErrorBoundary>
+                <Footer />
+              </ErrorBoundary>
+            </React.Fragment>
           );
         }
       }
