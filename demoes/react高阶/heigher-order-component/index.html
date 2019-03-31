@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <script src="../build/react.development.js"></script>
+    <script src="../build/react-dom.development.js"></script>
+    <script src="../build/babel.min.js"></script>
+    <script src="../build/jquery.min.js"></script>
+  </head>
+  <body>
+    <!-- 主页入口 -->
+    <div id="root"></div>
+
+    <script type="text/babel">   
+      function Button(props) {
+        return <button onClick={props.onClick}>{props.children}</button>
+      }
+
+      function setClickCounter(Component, config = {}) {
+        return class extends React.Component {
+          constructor(porps) {
+            super(porps);
+            
+            const {name, id, completeTime} = config;
+
+            this.clicked = this.clicked.bind(this);
+
+            this.state = {
+              name,
+              id,
+              completeTime,
+              count: 0,
+              isFinished: false
+            }
+          }
+
+          clicked() {
+            if (this.state.isFinished) return;
+            const {name, id, completeTime} = this.state;
+            this.setState(preState => {
+              const count = preState.count +1;
+              const isFinished = count >= completeTime;
+              console.log(`"${name}" 点击了 ${count}/${completeTime} 次 [${isFinished? '已完成':'未完成'}]`);
+              return {count, isFinished};
+            });
+          }
+          
+          render() {
+            const {name, isFinished} = this.state;
+            const {children, otherProps} = this.props;
+            if (isFinished) return `${name} [已完成]。`;
+            return (
+              <Component onClick={this.clicked} {...otherProps}>
+                {children}
+              </Component>
+            );
+          }
+        }
+      }
+
+      const SuperBtnA = setClickCounter(Button, {
+        name: 'A点击事件',
+        id: 'A',
+        completeTime: 10,
+      });
+      const SuperBtnB = setClickCounter(Button, {
+        name: 'B点击事件',
+        id: 'B',
+        completeTime: 15,
+      });
+     
+      /* App */
+      class App extends React.Component {
+        constructor(props) {
+          super(props);
+        }
+
+        render() {          
+          return (
+            <React.Fragment>
+              <SuperBtnA>A 按钮</SuperBtnA>
+              <br/>
+              <SuperBtnB>B 按钮</SuperBtnB>
+            </React.Fragment>
+          );
+        }
+      }
+
+      ReactDOM.render(
+        <App />,
+        document.getElementById('root')
+      );
+    </script>
+  </body>
+</html>
