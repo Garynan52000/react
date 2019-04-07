@@ -1,0 +1,70 @@
+.modal-container {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    background: #000;
+    opacity: .3;
+}
+
+.modal, .modal > header, .modal > section, .modal > section > div, .modal > footer {
+    box-sizing: border-box;
+}
+.modal {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto auto; 
+
+    width: 300px;
+    border-radius: 3px;
+    background: #f2f2f2;
+
+}
+.modal > header, .modal > footer {
+    padding: 0 15px;
+}
+.modal > header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    
+    border-bottom: 2px solid #ccc;
+}
+.modal > header > i {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 8px;
+    width: 16px;
+    height: 16px;
+    line-height: 1;
+
+    margin: auto auto;
+
+    cursor: pointer;
+}
+.modal > section {
+    position: absolute;
+    left: 0;
+    right: 0;
+}
+.modal > section > div {
+    overflow-y: auto;
+
+    height: 100%;
+    padding: 15px;
+}
+.modal > footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    
+    border-top: 2px solid #ccc;
+}

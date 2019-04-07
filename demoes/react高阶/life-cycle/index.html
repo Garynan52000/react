@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <script src="../build/react.development.js"></script>
+    <script src="../build/react-dom.development.js"></script>
+    <script src="../build/babel.min.js"></script>
+    <script src="../build/jquery.min.js"></script>
+
+    <!-- 样式 -->
+    <link rel="stylesheet" href="./index.css">
+  </head>
+  <body>
+    <!-- 主页入口 -->
+    <div id="root"></div>
+    <!-- 弹框组建入口 -->
+    <div id="modal-root"></div>
+
+    <script type="text/babel">
+
+      class ComponentA extends React.Component {
+
+        refUl = React.createRef();
+        interval = null;
+        
+        constructor(props) {
+          super(props);
+        }
+
+        render() {
+          return (
+            <ul ref={this.refUl}>
+              <li>11111111111</li>
+              <li>22222222222</li>
+              <li>33333333333</li>
+              <li>44444444444</li>
+            </ul>
+          );
+        }
+
+
+        componentDidMount() {
+          this.start();
+        }
+
+        componentWillUnmount() {
+          this.end();
+        }
+        
+        start() {
+          this.interval = setInterval(() => {
+            const parent = this.refUl.current;
+            const rmChild = parent.removeChild(parent.firstChild);
+            parent.appendChild(rmChild);
+
+            console.log('move!');
+          }, 1000);
+        }
+
+        end() {
+          if (this.interval) clearInterval(this.interval);
+        }
+      }
+     
+      /* App */
+      class App extends React.Component {
+        constructor(props) {
+          super(props);
+
+          this.state = {
+            isShow: true
+          }
+
+          this.showChange = this.showChange.bind(this); 
+        }
+
+        showChange() {
+          this.setState((preState) => {
+            return {isShow: !preState.isShow};
+          });
+        }
+
+        render() {          
+          return (
+            <React.Fragment>
+              {this.state.isShow?<ComponentA /> : null}
+              <button onClick={this.showChange}>Switch</button>
+            </React.Fragment>
+          );
+        }
+      }
+
+
+      ReactDOM.render(
+        <App />,
+        document.getElementById('root')
+      );
+    </script>
+  </body>
+</html>
