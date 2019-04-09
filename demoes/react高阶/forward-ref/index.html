@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <script src="../build/react.development.js"></script>
+    <script src="../build/react-dom.development.js"></script>
+    <script src="../build/babel.min.js"></script>
+    <script src="../build/jquery.min.js"></script>
+  </head>
+  <body>
+    <!-- 主页入口 -->
+    <div id="root"></div>
+
+    <script type="text/babel">    
+      class ComponentA extends React.Component {
+        render() {
+          return <h1>ComponentA</h1>
+        }
+      }
+
+      function logProps(Component) {
+        class LogProps extends React.Component {
+          componentDidUpdate(prevProps) {
+            console.log('old props:', prevProps);
+            console.log('new props:', this.props);
+          }
+
+          render() {
+            const {forwardedRef, ...rest} = this.props;
+            return <Component ref={forwardedRef} {...rest} />;
+          }
+        }
+        
+        debugger;
+        function forwardRef(props, ref) {
+          return <LogProps {...props} forwardedRef={ref} />;
+        }
+
+        const name = Component.displayName || Component.name;
+        forwardRef.displayName = `logProps(${name})`;
+
+        return React.forwardRef(forwardRef);
+      }
+
+      const LogsA = logProps(ComponentA);
+
+      /* App */
+      class App extends React.Component {
+        constructor(props) {
+          super(props);
+
+          this.ref = React.createRef();
+
+          this.state = {
+            a: 'a',
+            b: 'b'
+          }
+        }
+
+        componentDidMount() {
+          console.log(this.ref);
+        }
+
+        render() {          
+          return (
+            <React.Fragment>
+              <LogsA ref={this.ref} {...this.state}/>
+            </React.Fragment>
+          );
+        }
+      }
+
+
+      ReactDOM.render(
+        <App />,
+        document.getElementById('root')
+      );
+    </script>
+  </body>
+</html>
