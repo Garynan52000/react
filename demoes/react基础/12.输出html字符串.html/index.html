@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <script src="../build/react.development.js"></script>
+    <script src="../build/react-dom.development.js"></script>
+    <script src="../build/babel.min.js"></script>
+    <script src="../build/jquery.min.js"></script>
+  </head>
+  <body>
+    <div id="example"></div>
+    <script type="text/babel">
+      const App = (porps) => {
+        let {htmlString} = porps;
+        const scriptReg = /^<script>(.+)<\/script>/ig;
+        htmlString = htmlString.replace(/[\s+]/ig, '');
+        htmlString = htmlString.replace(scriptReg, '');
+        
+        return <div dangerouslySetInnerHTML={{__html: htmlString}}/>
+      }
+
+      ReactDOM.render(
+        <App htmlString="<h1>Insert HTML</h1>"/>,
+        document.getElementById('example')
+      );
+    </script>
+  </body>
+</html>
