@@ -25,26 +25,6 @@
 
     <script type="text/babel">
     
-<<<<<<< HEAD
-      function logErrorToMyService(error, info) {
-        console.log('logErrorToMyService error: ', error);
-        console.log('logErrorToMyService info: ', info);
-      }
-
-      function List(props) {
-        throw new Error('can not get List!');
-        return (
-          <ul>
-            <li>11111111111</li>
-            <li>22222222222</li>
-            <li>33333333333</li>
-            <li>44444444444</li>
-          </ul>
-        );
-      }
-
-=======
->>>>>>> 168596d0c1fac9dbaaea9036169dfe6c9b7b4e30
       function Header(props) {
         return (
           <header>
@@ -90,20 +70,11 @@
       function Footer(props) {
         return (
           <footer>
-<<<<<<< HEAD
-            <h2>Footer</h2>
-            <ErrorBoundary>
-              <div>
-                {arr[100].nokey}
-              </div>
-            </ErrorBoundary>
-=======
             <h3>Footer</h3>
             <ErrorBoundary>
               <FooterError />
             </ErrorBoundary>
             <hr/>
->>>>>>> 168596d0c1fac9dbaaea9036169dfe6c9b7b4e30
           </footer>
         );
       }
@@ -120,32 +91,19 @@
             isError: false,
             error: null,
             errorInfo: null,
-<<<<<<< HEAD
-          };
-        }
-
-        static getDerivedStateFromError(error) {
-          // Update state so the next render will show the fallback UI.
-=======
          };
         }
 
         static getDerivedStateFromError(error) {
->>>>>>> 168596d0c1fac9dbaaea9036169dfe6c9b7b4e30
           const isError = true;
           return { isError, error };
         }
 
         componentDidCatch(error, info) {
           // You can also log the error to an error reporting service
-<<<<<<< HEAD
-          console.log('error', error);
-          console.log('info', info);
-=======
           this.setState({
             errorInfo: info
           });
->>>>>>> 168596d0c1fac9dbaaea9036169dfe6c9b7b4e30
         }
 
         render() {
@@ -171,19 +129,6 @@
         render() {          
           return (
             <React.Fragment>
-<<<<<<< HEAD
-
-              <Header />
-
-              <ErrorBoundary>
-                <Article />
-              </ErrorBoundary>
-
-              <ErrorBoundary>
-                <Footer />
-              </ErrorBoundary>
-
-=======
               <ErrorBoundary>
                 <Header />
               </ErrorBoundary>
@@ -193,7 +138,6 @@
               <ErrorBoundary>
                 <Footer />
               </ErrorBoundary>
->>>>>>> 168596d0c1fac9dbaaea9036169dfe6c9b7b4e30
             </React.Fragment>
           );
         }
